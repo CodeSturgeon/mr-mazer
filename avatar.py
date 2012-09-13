@@ -14,10 +14,10 @@ from model import Avatar, Tile, get_tile, get_avatar, set_entity
 import logging
 log = logging.getLogger()
 
-shape_vector = {1: (0,-1), 4: (0,1), 8: (-1,0), 2: (1,0)}
+shape_vector = {1: (0, -1), 4: (0, 1), 8: (-1, 0), 2: (1, 0)}
 
 # FIXME this should be part of the avatar
-maze_name ='bogart'
+maze_name = 'bogart'
 #maze_name = 'bcn'
 
 def move_avatar(name, moves, response, jsonp_callback = ''):
@@ -27,7 +27,7 @@ def move_avatar(name, moves, response, jsonp_callback = ''):
     for move in moves:
         # Get the move direction
         try:
-            move_shape = int(move.get('move',0))
+            move_shape = int(move.get('move', 0))
             assert move_shape in shape_vector.keys()
         except (AssertionError, ValueError):
             raise HTTPBadRequest('Bad move value. Should be one of: %s'%
@@ -59,8 +59,8 @@ def move_avatar(name, moves, response, jsonp_callback = ''):
 
     for t in pre_tile.serial():
         ret_tiles.pop((t['x'],t['y']),0)
-        
-    ret = {'avatar':avatar}
+
+    ret = {'avatar': avatar}
     ret['tiles'] = [{'x':t[0],'y':t[1],'shape':ret_tiles[t]}
                                                         for t in ret_tiles]
     set_entity(avatar)
@@ -74,12 +74,14 @@ def move_avatar(name, moves, response, jsonp_callback = ''):
 
     response.out.write(ret_json)
 
+
 def custom_encode(obj):
     try:
         getattr(obj, 'serial')
         return obj.serial()
     except AttributeError:
         raise TypeError(repr(obj) + "Yuky JSON!")
+
 
 class MainHandler(ExceptableHandler):
 
@@ -97,14 +99,14 @@ class MainHandler(ExceptableHandler):
             return move_avatar(name, moves, self.response, jsonp_callback)
         avatar = get_avatar(name)
         base_tile = get_tile(maze_name, avatar.x, avatar.y)
-        ret = {'avatar':avatar, 'tiles':base_tile}
-        ret_json = json.dumps(ret,indent=2,default=custom_encode)
+        ret = {'avatar': avatar, 'tiles': base_tile}
+        ret_json = json.dumps(ret, indent=2, default=custom_encode)
 
         if jsonp_callback == '':
             self.response.headers['Content-type'] = 'application/json'
         else:
             self.response.headers['Content-type'] = 'application/javascript'
-            ret_json = "%s(\n%s\n);"%(jsonp_callback,ret_json)
+            ret_json = "%s(\n%s\n);" % (jsonp_callback, ret_json)
 
         self.response.out.write(ret_json)
 
