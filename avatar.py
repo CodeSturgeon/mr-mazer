@@ -3,7 +3,7 @@ import wsgiref.handlers
 
 from google.appengine.ext import webapp, db
 
-import simplejson as json
+import json
 import cgi
 
 from exceptable import exceptable, ExceptableHandler, HTTPBadRequest

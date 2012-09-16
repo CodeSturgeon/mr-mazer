@@ -1,6 +1,6 @@
 from google.appengine.ext import db
 from google.appengine.api import memcache
-import simplejson as json
+import json
 
 def get_tile(maze_name, x, y):
     key_path = ('Maze', maze_name, 'Tile', '%d-%d'%(x,y))
@@ -48,10 +48,6 @@ class Tile(db.Model):
         return json.loads(self.view_blob)
     def __repr__(self):
         return '<Tile (%d,%d,%d)>'%(self.x, self.y, self.shape)
-
-class TileZ(Tile):
-    # For pre-4 compatability when using remote api
-    pass
 
 class Avatar(db.Model):
     x = db.IntegerProperty(default=0, indexed=False)
