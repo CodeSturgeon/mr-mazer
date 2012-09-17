@@ -5,6 +5,7 @@ import random
 from model import Tile, Avatar
 from google.appengine.ext import db
 import pickle
+import json
 
 from google.appengine.ext import webapp
 
@@ -66,6 +67,14 @@ def make_maze(width,height):
             x,y=random.choice(open)
     return cleared
 
+def get_shape(x, y, cleared):
+    shape = 0
+    if (x, y-1) in cleared: shape |= 1
+    if (x+1, y) in cleared: shape |= 2
+    if (x, y+1) in cleared: shape |= 4
+    if (x-1, y) in cleared: shape |= 8
+    return shape
+
 class MainHandler(webapp.RequestHandler):
 
   def get(self):
@@ -77,8 +86,10 @@ class MainHandler(webapp.RequestHandler):
         for vy in range(t[1]-view_radius,t[1]+view_radius+1):
             for vx in range(t[0]-view_radius,t[0]+view_radius+1):
                 if (vx,vy) in cleared:
-                    view.append({'x':vx, 'y':vy})
-        Tile(x=t[0], y=t[1], view_blob=pickle.dumps(view, 2)).put()
+                    shape = get_shape(vx, vy, cleared)
+                    view.append({'x':vx, 'y':vy, 'shape': shape})
+        shape = get_shape(t[0], t[1], cleared)
+        Tile(x=t[0], y=t[1], shape=shape, view_blob=json.dumps(view)).put()
     Avatar(x=0,y=0,name='jack').put()
     self.response.out.write('Generator %s'%cleared)
 
