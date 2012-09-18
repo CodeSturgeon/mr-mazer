@@ -78,8 +78,7 @@ class Avatar(db.Model):
             'name': self.name,
             'x': self.x,
             'y': self.y,
-            'moves':
-            self.moves
+            'moves': self.moves
         }
 
     def __repr__(self):
