@@ -93,7 +93,17 @@ class MainHandler(webapp.RequestHandler):
                         shape = get_shape(vx, vy, cleared)
                         view.append({'x': vx, 'y': vy, 'shape': shape})
             shape = get_shape(t[0], t[1], cleared)
-            Tile(x=t[0], y=t[1], shape=shape, view_blob=json.dumps(view)).put()
+            key = db.Key.from_path(
+                'Maze', 'bogart',
+                'Tile', '%d-%d' % (t[0], t[1])
+            )
+            Tile(
+                key=key,
+                x=t[0],
+                y=t[1],
+                shape=shape,
+                view_blob=json.dumps(view)
+            ).put()
         Avatar(x=0, y=0, name='jack').put()
         self.response.out.write('Generator %s' % cleared)
 
